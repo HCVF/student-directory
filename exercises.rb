@@ -7,10 +7,15 @@ def input_students
   name = gets.chomp
   # while the name is not empty, repeat this code
   while !name.empty? do
+    # ask for student height
+    puts "Height of student in cm please"
+    # get height
+    height = gets.chomp.chomp("cm")
     # add the student hash to the array
-    students << {name: name, cohort: :november}
-    puts "Now we have #{students.count} students"
-    # get another name from the user
+    students << {name: name, cohort: :november, height: height}
+    puts "Now we have #{students.count} students\n\n"
+    # get another name from the user, ask for name again for clarity
+    puts "Name of next student please"
     name = gets.chomp
   end
   # return the array of students
@@ -25,7 +30,7 @@ end
 def print(students)
   n = 0
   while n < students.count
-    puts "#{students[n][:name]} (#{students[n][:cohort]} cohort)"
+    puts "#{students[n][:name]}, #{students[n][:height]}cm, #{students[n][:cohort]} cohort"
     n += 1
   end
 end
