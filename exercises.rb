@@ -51,7 +51,7 @@ def input_students
     end  
     # get another name from the user, ask for name again for clarity
     puts "Name of next student please".center(50)
-    name = gets.chomp
+    name = gets.delete!("\n")
   end
   # return the array of students
   students
