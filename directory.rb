@@ -25,8 +25,8 @@ end
 def print_menu
   puts "1. Input the students"
   puts "2. Show the students"
-  puts "3. Save the list to students.csv"
-  puts "4. Load the list from students.csv"
+  puts "3. Save the list"
+  puts "4. Load the list"
   puts "9. Exit"
 end
 
@@ -43,9 +43,9 @@ def process(selection)
   when "2"
     show_students
   when "3"
-    save_students
+    request_filename("save")
   when "4"
-    load_students  
+    request_filename("load")
   when "9"
     exit #this will cause the program to terminate
   else
@@ -68,9 +68,9 @@ def print_footer
   puts "Overall, we have #{@students.count} great students\n\n"
 end
 
-def save_students
+def save_students(filename = "students.csv")
   #open the file for writing
-  file = File.open("students.csv", "w")
+  file = File.open(filename.include?(".") ? filename : filename + ".csv", "w")
   #iterate over the array of students
   @students.each do |student|
     student_data = [student[:name], student[:cohort]]
@@ -78,6 +78,20 @@ def save_students
     file.puts csv_line
   end
   file.close
+  puts "Students saved"
+end
+
+def add_students(name, cohort = :november)
+  @students << {name: name, cohort: cohort.to_sym}
+end
+
+def request_filename(save_load)
+  puts "Which file would you like to #{save_load}? Return to #{save_load} default file"
+  file = gets.chomp
+  if file.empty?
+    file = "students.csv"
+  end
+  save_load == "load" ? load_students(file) : save_students(file)
 end
 
 def load_students(filename = "students.csv")
@@ -87,18 +101,13 @@ def load_students(filename = "students.csv")
     add_students(name, cohort)
   end
   file.close
-end
-
-def add_students(name, cohort = :november)
-  @students << {name: name, cohort: cohort.to_sym}
+  puts "Loaded #{@students.count} from #{filename}"
 end
 
 def try_load_students
-  filename = ARGV.first # first argument from the command line
-  return if filename.nil? # get out of the method if it isn't given
+  filename = ARGV.first || "students.csv"
   if File.exist?(filename) # if it exists
     load_students(filename)
-    puts "Loaded #{@students.count} from #{filename}"
   else #if it doesnt exist
     puts "Sorry, #{filename} doesn't exist."
     exit # quits the program
