@@ -1,3 +1,4 @@
+require 'csv'
 @students = []
 
 def input_students
@@ -69,19 +70,17 @@ def print_footer
 end
 
 def save_students(filename = "students.csv")
-  #open the file for writing
-  file = File.open(filename.include?(".") ? filename : filename + ".csv", "w")
-  #iterate over the array of students
-  @students.each do |student|
-    student_data = [student[:name], student[:cohort]]
-    csv_line = student_data.join(",")
-    file.puts csv_line
+  csv_object = CSV.generate do |csv|
+    @students.each do |student|
+      csv << [student[:name], student[:cohort]]
+    end
   end
-  file.close
+  File.write(filename.include?(".") ? filename : filename + ".csv", csv_object)
   puts "Students saved"
 end
 
 def add_students(name, cohort = :november)
+  cohort = :november if cohort === nil
   @students << {name: name, cohort: cohort.to_sym}
 end
 
@@ -95,13 +94,12 @@ def request_filename(save_load)
 end
 
 def load_students(filename = "students.csv")
-  File.open(filename.include?(".") ? filename : filename + ".csv", "r") do |file|
-  file.readlines.each do |line|
-    name, cohort = line.chomp.split(',')
+  old_students = @students.count
+  CSV.foreach(filename.include?(".") ? filename : filename + ".csv") do |row|
+    name, cohort = row
     add_students(name, cohort)
   end
-end
-  puts "Loaded #{@students.count} from #{filename}"
+  puts "Loaded #{@students.count - old_students} from #{filename}"
 end
 
 def try_load_students
