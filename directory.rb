@@ -95,12 +95,12 @@ def request_filename(save_load)
 end
 
 def load_students(filename = "students.csv")
-  file = File.open(filename, "r")
+  File.open(filename.include?(".") ? filename : filename + ".csv", "r") do |file|
   file.readlines.each do |line|
     name, cohort = line.chomp.split(',')
     add_students(name, cohort)
   end
-  file.close
+end
   puts "Loaded #{@students.count} from #{filename}"
 end
 
